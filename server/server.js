@@ -5,7 +5,12 @@ const authRoutes = require("./routes/authRoutes");
 const express = require("express");
 
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://team-task-manager-mu-roan.vercel.app",
+    credentials: true,
+  })
+);
 app.use(express.json());
 connectDB();
 
