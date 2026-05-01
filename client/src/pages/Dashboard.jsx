@@ -47,7 +47,7 @@ const createTask = async () => {
       const token = localStorage.getItem("token");
 
       const res = await axios.get(
-        "http://localhost:5000/api/tasks/all",
+        "https://team-task-manager-nggo.onrender.com/api/tasks/all",
         {
           headers: {
             Authorization: token,
