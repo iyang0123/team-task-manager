@@ -3,41 +3,19 @@ import axios from "axios";
 
 function Dashboard() {
   const [tasks, setTasks] = useState([]);
-const [formData, setFormData] = useState({
-  title: "",
-  description: "",
-});
-const handleChange = (e) => {
-  setFormData({
-    ...formData,
-    [e.target.name]: e.target.value,
+
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
   });
-};
-const createTask = async () => {
-  try {
-    const token = localStorage.getItem("token");
 
-    await axios.post(
-      "http://import.meta.env.VITE_API_URL/api/tasks/create",
-      formData,
-      {
-        headers: {
-          Authorization: token,
-        },
-      }
-    );
-
-    fetchTasks();
-
+  const handleChange = (e) => {
     setFormData({
-      title: "",
-      description: "",
+      ...formData,
+      [e.target.name]: e.target.value,
     });
+  };
 
-  } catch (error) {
-    console.log(error);
-  }
-};
   useEffect(() => {
     fetchTasks();
   }, []);
@@ -47,7 +25,7 @@ const createTask = async () => {
       const token = localStorage.getItem("token");
 
       const res = await axios.get(
-        "https://team-task-manager-nggo.onrender.com/api/tasks/all",
+        `${import.meta.env.VITE_API_URL}/api/tasks/all`,
         {
           headers: {
             Authorization: token,
@@ -56,6 +34,31 @@ const createTask = async () => {
       );
 
       setTasks(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const createTask = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/tasks/create`,
+        formData,
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+
+      fetchTasks();
+
+      setFormData({
+        title: "",
+        description: "",
+      });
     } catch (error) {
       console.log(error);
     }
@@ -71,53 +74,56 @@ const createTask = async () => {
       }}
     >
       <h1>Task Dashboard</h1>
+
       <button
-  onClick={() => {
-    localStorage.removeItem("token");
-    window.location.href = "/";
-  }}
-  style={{
-    padding: "10px 15px",
-    background: "red",
-    color: "white",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-    marginTop: "10px",
-  }}
->
-  Logout
-</button>
-<div
-  style={{
-    background: "#1e293b",
-    padding: "20px",
-    borderRadius: "10px",
-    marginTop: "20px",
-  }}
->
-  <input
-    type="text"
-    name="title"
-    placeholder="Enter Task Title"
-    value={formData.title}
-    onChange={handleChange}
-    style={inputStyle}
-  />
+        onClick={() => {
+          localStorage.removeItem("token");
+          window.location.href = "/";
+        }}
+        style={{
+          padding: "10px 15px",
+          background: "red",
+          color: "white",
+          border: "none",
+          borderRadius: "5px",
+          cursor: "pointer",
+          marginTop: "10px",
+        }}
+      >
+        Logout
+      </button>
 
-  <input
-    type="text"
-    name="description"
-    placeholder="Enter Description"
-    value={formData.description}
-    onChange={handleChange}
-    style={inputStyle}
-  />
+      <div
+        style={{
+          background: "#1e293b",
+          padding: "20px",
+          borderRadius: "10px",
+          marginTop: "20px",
+        }}
+      >
+        <input
+          type="text"
+          name="title"
+          placeholder="Enter Task Title"
+          value={formData.title}
+          onChange={handleChange}
+          style={inputStyle}
+        />
 
-  <button style={buttonStyle} onClick={createTask}>
-    Create Task
-  </button>
-</div>
+        <input
+          type="text"
+          name="description"
+          placeholder="Enter Description"
+          value={formData.description}
+          onChange={handleChange}
+          style={inputStyle}
+        />
+
+        <button style={buttonStyle} onClick={createTask}>
+          Create Task
+        </button>
+      </div>
+
       {tasks.map((task) => (
         <div
           key={task._id}
@@ -138,6 +144,7 @@ const createTask = async () => {
     </div>
   );
 }
+
 const inputStyle = {
   width: "100%",
   padding: "10px",
@@ -156,4 +163,5 @@ const buttonStyle = {
   color: "white",
   cursor: "pointer",
 };
+
 export default Dashboard;
