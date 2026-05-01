@@ -18,7 +18,7 @@ const createTask = async () => {
     const token = localStorage.getItem("token");
 
     await axios.post(
-      "http://localhost:5000/api/tasks/create",
+      "http://import.meta.env.VITE_API_URL/api/tasks/create",
       formData,
       {
         headers: {
