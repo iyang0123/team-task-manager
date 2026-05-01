@@ -1,89 +1,42 @@
+// server.js
+
 const express = require("express");
-const router = express.Router();
+const cors = require("cors");
+const connectDB = require("./config/db");
 
-const User = require("../models/User");
+const authRoutes = require("./routes/authRoutes");
+const taskRoutes = require("./routes/taskRoutes");
 
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const authMiddleware = require("../middleware/authMiddleware");
-router.get("/test", (req, res) => {
-  res.send("Auth route working");
+const app = express();
+
+// Middleware
+app.use(express.json());
+
+app.use(
+  cors({
+    origin: "*",
+  })
+);
+
+// Connect Database
+connectDB();
+
+// Routes
+app.use("/api/auth", authRoutes);
+app.use("/api/tasks", taskRoutes);
+
+// Test Route
+app.get("/", (req, res) => {
+  res.send("Backend Running");
 });
 
-router.post("/signup", async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const newUser = new User({
-      name,
-      email,
-      password: hashedPassword,
-    });
-
-    await newUser.save();
-
-    res.status(201).json({
-      message: "User registered successfully",
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: "Server Error",
-    });
-  }
+app.get("/hello", (req, res) => {
+  res.send("Hello route working");
 });
 
-router.post("/login", async (req, res) => {
-  try {
-    const { email, password } = req.body;
+// Server
+const PORT = process.env.PORT || 5000;
 
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      return res.status(400).json({
-        message: "User not found",
-      });
-    }
-
-    const isMatch = await bcrypt.compare(password, user.password);
-
-    if (!isMatch) {
-      return res.status(400).json({
-        message: "Invalid password",
-      });
-    }
-
-    const token = jwt.sign(
-      {
-        id: user._id,
-        role: user.role,
-      },
-      "secretkey",
-      {
-        expiresIn: "7d",
-      }
-    );
-
-    res.status(200).json({
-      message: "Login successful",
-      token,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: "Server Error",
-    });
-  }
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
-router.get("/profile", authMiddleware, async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id).select("-password");
-
-    res.status(200).json(user);
-  } catch (error) {
-    res.status(500).json({
-      message: "Server Error",
-    });
-  }
-});
-module.exports = router;
