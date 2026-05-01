@@ -7,7 +7,9 @@ function Login() {
     email: "",
     password: "",
   });
-const navigate = useNavigate();
+
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -25,8 +27,11 @@ const navigate = useNavigate();
       localStorage.setItem("token", res.data.token);
 
       alert("Login Successful");
+
       navigate("/dashboard");
     } catch (error) {
+      console.log(error);
+
       alert("Login Failed");
     }
   };
@@ -49,7 +54,9 @@ const navigate = useNavigate();
           width: "300px",
         }}
       >
-        <h1 style={{ color: "white", textAlign: "center" }}>Login</h1>
+        <h1 style={{ color: "white", textAlign: "center" }}>
+          Login
+        </h1>
 
         <input
           type="email"
